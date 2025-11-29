@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Moon, Sun, Eye } from 'lucide-react';
-import { useTheme } from 'next-themes';
+import { Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AnimatedMenuButton } from '@/components/ui/animated-menu-button';
+import { AnimatedThemeToggle } from '@/components/ui/animated-theme-toggle';
 import { ResumeModal } from '@/components/resume-modal';
 
 const navItems = [
@@ -20,7 +20,6 @@ export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showResumeModal, setShowResumeModal] = useState(false);
-  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [showNav, setShowNav] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -93,33 +92,13 @@ export function Navigation() {
                   <Eye className="w-4 h-4" />
                   View Resume
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                >
-                  {theme === 'dark' ? (
-                    <Sun className="w-4 h-4" />
-                  ) : (
-                    <Moon className="w-4 h-4" />
-                  )}
-                </Button>
+                <AnimatedThemeToggle />
               </div>
             </div>
 
             {/* Mobile menu button */}
             <div className="md:hidden flex items-center space-x-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              >
-                {theme === 'dark' ? (
-                  <Sun className="w-4 h-4" />
-                ) : (
-                  <Moon className="w-4 h-4" />
-                )}
-              </Button>
+              <AnimatedThemeToggle />
               
               <AnimatedMenuButton
                 isOpen={isOpen}
