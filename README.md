@@ -1,10 +1,6 @@
 <h1 align="center">Ayan Ali — Portfolio</h1>
 
 <p align="center">
-  A modern, responsive developer portfolio built with Next.js, TypeScript, Tailwind CSS, and Framer Motion.
-</p>
-
-<p align="center">
   ★
   <a href="https://ayanali-portfolio.netlify.app/" target="_blank"><b>Live Demo</b></a>
   一
