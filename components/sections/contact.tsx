@@ -17,21 +17,18 @@ const contactInfo = [
     label: 'Email',
     value: 'pathanayan8347@gmail.com',
     href: 'mailto:pathanayan8347@gmail.com',
-    color: 'from-blue-500 to-cyan-500'
   },
   {
     icon: Phone,
     label: 'Phone',
     value: '+91 9313917598',
     href: 'tel:+919313917598', // ✅ Changed to tel: for direct calling
-    color: 'from-green-500 to-emerald-500'
   },
   {
     icon: MapPin,
     label: 'Location',
     value: 'Sindhiwad, Lal tower, Rajpipla, Gujarat, 393145',
     href: 'https://www.google.com/maps/search/?api=1&query=Rajpipla,+Gujarat', // ✅ Fixed link
-    color: 'from-purple-500 to-pink-500'
   }
 ];
 
@@ -159,8 +156,8 @@ export default function Contact() {
                   <Card className="hover:shadow-lg transition-all duration-300 border-0 bg-background/50 backdrop-blur-sm">
                     <CardContent className="p-4">
                       <div className="flex items-center space-x-4">
-                        <div className={`p-3 rounded-lg bg-gradient-to-r ${info.color}`}>
-                          <info.icon className="w-5 h-5 text-white" />
+                        <div className="p-3 rounded-lg bg-neutral-200 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700">
+                          <info.icon className="w-5 h-5 text-neutral-800 dark:text-neutral-200" />
                         </div>
                         <div>
                           <p className="font-medium group-hover:text-primary transition-colors">

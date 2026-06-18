@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowDown, Download, Eye, Github, Linkedin, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useRef, useEffect } from 'react';
-import { ResumeModal } from '@/components/resume-modal';
+import { ResumeModal } from '@/components/modals/resume-modal';
 import React from 'react';
 import dynamic from 'next/dynamic';
 import { useTheme } from 'next-themes';

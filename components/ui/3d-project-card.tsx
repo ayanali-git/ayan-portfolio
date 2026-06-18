@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useEffect, useId, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { useOutsideClick } from "@/hooks/use-outside-click";
-import { ExternalLink, Github, Calendar, Star, GitFork } from 'lucide-react';
+import React, { useId, useState } from "react";
+import { motion } from "framer-motion";
+import { ExternalLink, Github } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CardBody, CardContainer, CardItem } from '@/components/ui/3d-card';
+import { DetailModal } from '@/components/modals/detail-modal';
 
 interface Project {
   id: number;
@@ -34,184 +34,14 @@ interface ThreeDProjectCardProps {
 export default function ThreeDProjectCard({ projects, featured = false }: ThreeDProjectCardProps) {
   const [active, setActive] = useState<Project | null>(null);
   const id = useId();
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setActive(null);
-      }
-    }
-
-    if (active) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [active]);
-
-  useOutsideClick(ref, () => setActive(null));
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
 
   return (
     <>
-      <AnimatePresence>
-        {active && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm h-full w-full z-50"
-          />
-        )}
-      </AnimatePresence>
-      <AnimatePresence>
-        {active ? (
-          <div className="fixed inset-0 grid place-items-center z-[100] p-4">
-            {/* ✅ FIXED: The button is now INSIDE the card's div below to solve the layering issue. */}
-            <motion.div
-              layoutId={`card-${active.title}-${id}`}
-              ref={ref}
-              // ✅ FIXED: Added 'relative' to create a positioning context for the close button.
-              className="relative w-full max-w-4xl h-full md:h-fit md:max-h-[90vh] flex flex-col bg-white dark:bg-neutral-900 rounded-2xl overflow-hidden shadow-2xl border border-neutral-200 dark:border-neutral-700"
-            >
-              {/* ✅ FIXED: Button moved inside and given a z-index to ensure it's always on top. */}
-              <motion.button
-                key={`button-${active.title}-${id}`}
-                layout
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1, transition: { delay: 0.2 } }}
-                exit={{ opacity: 0, scale: 0.5 }}
-                className="flex absolute top-4 right-4 items-center justify-center bg-white dark:bg-neutral-800 rounded-full h-10 w-10 shadow-lg hover:scale-110 transition-transform z-10"
-                onClick={() => setActive(null)}
-              >
-                <CloseIcon />
-              </motion.button>
-              <motion.div layoutId={`image-${active.title}-${id}`} className="relative">
-                <img
-                  width={400}
-                  height={300}
-                  src={active.image}
-                  alt={active.title}
-                  loading="lazy"
-                  className="w-full h-64 md:h-80 object-cover object-top"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-              </motion.div>
-
-              <div className="flex-1 flex flex-col overflow-y-auto">
-                <div className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex-1 pr-4">
-                      <motion.h3
-                        layoutId={`title-${active.title}-${id}`}
-                        className="font-bold text-xl md:text-2xl text-neutral-800 dark:text-neutral-100 mb-2"
-                      >
-                        {active.title}
-                      </motion.h3>
-                      <motion.p
-                        layoutId={`description-${active.description}-${id}`}
-                        className="text-neutral-600 dark:text-neutral-300 text-base leading-relaxed"
-                      >
-                        {active.description}
-                      </motion.p>
-                    </div>
-
-                    <motion.div
-                      layout
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="flex flex-col sm:flex-row gap-2 ml-4"
-                    >
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        asChild
-                        className="hover:bg-primary hover:text-primary-foreground transition-colors"
-                      >
-                        <a
-                          href={active.githubUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2"
-                        >
-                          <Github className="w-4 h-4" />
-                          Code
-                        </a>
-                      </Button>
-                      
-                      {active.liveUrl && (
-                        <Button
-                          size="sm"
-                          asChild
-                          className="flex items-center gap-2"
-                        >
-                          <a
-                            href={active.liveUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                            Live Demo
-                          </a>
-                        </Button>
-                      )}
-                    </motion.div>
-                  </div>
-                  
-                  <motion.div
-                    layout
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="space-y-4"
-                  >
-                    <div className="flex flex-wrap gap-2">
-                      {active.technologies.map((tech) => (
-                        <Badge key={tech} variant="secondary" className="text-xs font-medium">
-                          {tech}
-                        </Badge>
-                      ))}
-                    </div>
-                    
-                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4" />
-                        <span>{active.stats.stars}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <GitFork className="w-4 h-4" />
-                        <span>{active.stats.forks}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4" />
-                        <span>Updated {formatDate(active.stats.lastUpdated)}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="pt-4 border-t border-neutral-200 dark:border-neutral-700">
-                      <p className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
-                        {active.longDescription || active.description}
-                      </p>
-                    </div>
-                  </motion.div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        ) : null}
-      </AnimatePresence>
+      <DetailModal
+        project={active}
+        onClose={() => setActive(null)}
+        layoutIdPrefix={id}
+      />
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
         {projects.map((project, index) => (
@@ -318,36 +148,4 @@ export default function ThreeDProjectCard({ projects, featured = false }: ThreeD
     </>
   );
 }
-
-export const CloseIcon = () => {
-  return (
-    <motion.svg
-      initial={{
-        opacity: 0,
-      }}
-      animate={{
-        opacity: 1,
-      }}
-      exit={{
-        opacity: 0,
-        transition: {
-          duration: 0.05,
-        },
-      }}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-5 w-5 text-neutral-600 dark:text-neutral-300"
-    >
-      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-      <path d="M18 6l-12 12" />
-      <path d="M6 6l12 12" />
-    </motion.svg>
-  );
-};
+

@@ -35,7 +35,7 @@ CustomDialogContent.displayName = DialogPrimitive.Content.displayName;
 
 export function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
   // Use a single source of truth for the resume URL. Files in `public/` are served from root.
-  const resumeUrl = '/My_Resume.pdf';
+  const resumeUrl = '/My-Resume.pdf';
 
   const downloadResume = () => {
     const link = document.createElement('a');

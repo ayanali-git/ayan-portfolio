@@ -7,7 +7,7 @@ import { Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AnimatedMenuButton } from '@/components/ui/animated-menu-button';
 import { AnimatedThemeToggle } from '@/components/ui/animated-theme-toggle';
-import { ResumeModal } from '@/components/resume-modal';
+import { ResumeModal } from '@/components/modals/resume-modal';
 
 const navItems = [
   { name: 'Home', href: '#home' },
