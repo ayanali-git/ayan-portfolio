@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Award } from 'lucide-react';
+import { Award, Calendar, MapPin } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Timeline } from '@/components/ui/timeline';
 
@@ -18,10 +18,16 @@ const timelineData = [
           <p className="text-sm font-medium text-primary mt-1">
             Higher Secondary Education (Class XI & XII - Science)
           </p>
-          <div className="flex items-center gap-4 mt-2 text-sm text-neutral-500 dark:text-neutral-400">
-            <span>completed 2021-22</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-700"></span>
-            <span>Grade: A</span>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2 text-sm text-neutral-500 dark:text-neutral-400">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
+              <span>completed 2021-22</span>
+            </div>
+            <span className="hidden sm:block w-1.5 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-700"></span>
+            <div className="flex items-center gap-2">
+              <Award className="w-4 h-4 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
+              <span>Grade: A</span>
+            </div>
           </div>
         </div>
 
@@ -57,10 +63,16 @@ const timelineData = [
           <p className="text-sm font-medium text-primary mt-1">
             Bachelor of Technology (B.Tech) - Information Technology
           </p>
-          <div className="flex items-center gap-4 mt-2 text-sm text-neutral-500 dark:text-neutral-400">
-            <span>Sep 2022 – Jul 2026</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-700"></span>
-            <span>Grade: B</span>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2 text-sm text-neutral-500 dark:text-neutral-400">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
+              <span>Sep 2022 – Jul 2026</span>
+            </div>
+            <span className="hidden sm:block w-1.5 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-700"></span>
+            <div className="flex items-center gap-2">
+              <Award className="w-4 h-4 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
+              <span>Grade: B</span>
+            </div>
           </div>
         </div>
 
@@ -94,9 +106,10 @@ const timelineData = [
           <h4 className="text-xl sm:text-2xl font-bold text-neutral-800 dark:text-neutral-100">
             TatvaSoft – 15-Day Summer Internship Program
           </h4>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-            26 May – 13 June 2025
-          </p>
+          <div className="flex items-center gap-2 mt-2 text-sm text-neutral-500 dark:text-neutral-400">
+            <Calendar className="w-4 h-4 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
+            <span>26 May – 13 June 2025</span>
+          </div>
         </div>
         
         <div className="flex flex-wrap gap-3">
@@ -148,10 +161,16 @@ const timelineData = [
           <p className="text-sm font-medium text-primary mt-1">
             Full Stack Developer Intern
           </p>
-          <div className="flex items-center gap-4 mt-2 text-sm text-neutral-500 dark:text-neutral-400">
-            <span>Dec 2025 – Jun 2026</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-700"></span>
-            <span>Anand, Gujarat (On-site)</span>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2 text-sm text-neutral-500 dark:text-neutral-400">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
+              <span>Dec 2025 – Jun 2026</span>
+            </div>
+            <span className="hidden sm:block w-1.5 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-700"></span>
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
+              <span>Anand, Gujarat (On-site)</span>
+            </div>
           </div>
         </div>
 

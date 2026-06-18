@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 
 interface TimelineEntry {
   title: string;
@@ -99,19 +100,27 @@ export const Timeline = ({
 
   return (
     <div
-      className="w-full bg-transparent font-sans md:px-10"
+      className="w-full bg-transparent font-sans"
       ref={containerRef}
     >
-      <div className="max-w-7xl mx-auto py-20 px-4 md:px-8 lg:px-10">
-        <h2 className="text-3xl md:text-5xl mb-4 text-black dark:text-white max-w-4xl font-bold">
-          {title}
-        </h2>
-        <p className="text-neutral-600 dark:text-neutral-400 text-sm md:text-base max-w-lg">
-          {description}
-        </p>
+      <div className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="text-center"
+        >
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 text-black dark:text-white">
+            {title}
+          </h2>
+          <p className="text-lg sm:text-xl text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto">
+            {description}
+          </p>
+        </motion.div>
       </div>
 
-      <div ref={ref} className="relative max-w-7xl mx-auto pb-20">
+      <div ref={ref} className="relative max-w-7xl mx-auto pb-20 px-4 sm:px-6 lg:px-8">
         {data.map((item, index) => {
           const isActive = activeIndices.has(index);
 
@@ -207,7 +216,7 @@ export const Timeline = ({
             top: lineTop + "px",
             height: lineHeight + "px",
           }}
-          className="absolute md:left-[31px] left-[23px] overflow-hidden w-[2px] bg-neutral-200 dark:bg-neutral-800 rounded-full"
+          className="absolute left-[39px] sm:left-[47px] md:left-[55px] lg:left-[63px] overflow-hidden w-[2px] bg-neutral-200 dark:bg-neutral-800 rounded-full"
         >
           <div
             style={{

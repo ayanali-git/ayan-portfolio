@@ -235,7 +235,7 @@ export function Hero() {
       
       {/* Hero Content */}
       {/* ✅ Changed to flex-col and md:flex-row for responsiveness */}
-      <div className="relative z-10 w-full max-w-5xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center min-h-[70vh] gap-10 md:gap-16 text-center md:text-left">
+      <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-center min-h-[70vh] gap-10 md:gap-16 text-center md:text-left">
         {/* Ellipse Photo Frame on Left */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}

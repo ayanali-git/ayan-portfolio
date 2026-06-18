@@ -75,7 +75,7 @@ export function DetailModal({ project, onClose, layoutIdPrefix }: DetailModalPro
       </AnimatePresence>
       <AnimatePresence>
         {project ? (
-          <div className="fixed inset-0 grid place-items-center z-[100] p-4">
+          <div className="fixed inset-0 grid place-items-center z-[100] p-3 sm:p-4">
             <motion.div
               layoutId={`card-${project.title}-${layoutIdPrefix}`}
               ref={ref}
@@ -105,7 +105,7 @@ export function DetailModal({ project, onClose, layoutIdPrefix }: DetailModalPro
               </motion.div>
 
               <div className="flex-1 flex flex-col overflow-y-auto">
-                <div className="p-6">
+                <div className="p-4 sm:p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex-1 pr-4">
                       <motion.h3

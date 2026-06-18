@@ -79,8 +79,11 @@
   * {
     @apply border-border;
   }
+  html,
   body {
     @apply bg-background text-foreground;
+    max-width: 100vw;
+    overflow-x: hidden;
   }
 }
 
@@ -109,4 +112,9 @@
     transform: translateY(-10px);
     }
   }
+}
+
+::view-transition-old(root), ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
 }
