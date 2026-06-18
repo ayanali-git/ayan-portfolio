@@ -52,7 +52,7 @@ const AuroraBackground: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
   const reduced = usePrefersReducedMotion();
   const isMobile = useIsMobile();
-  const [inView, setInView] = useState(false);
+   const [inView, setInView] = useState(false);
   
   useEffect(() => {
     if (!mountRef.current) return;
