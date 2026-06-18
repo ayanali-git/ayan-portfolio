@@ -1,9 +1,5 @@
 "use client";
-import {
-  useScroll,
-  useTransform,
-  motion,
-} from "motion/react";
+
 import React, { useEffect, useRef, useState } from "react";
 
 interface TimelineEntry {
@@ -26,21 +22,80 @@ export const Timeline = ({
   const ref = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
+  const [lineTop, setLineTop] = useState(0);
+  const [lineHeight, setLineHeight] = useState(0);
+  const [activeHeight, setActiveHeight] = useState(0);
+  const [activeIndices, setActiveIndices] = useState<Set<number>>(new Set());
 
   useEffect(() => {
-    if (ref.current) {
-      const rect = ref.current.getBoundingClientRect();
-      setHeight(rect.height);
-    }
-  }, [ref]);
+    const calculateBoundsAndProgress = () => {
+      if (ref.current) {
+        const rect = ref.current.getBoundingClientRect();
+        setHeight(rect.height);
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start 10%", "end 50%"],
-  });
+        const rows = ref.current.querySelectorAll(".timeline-row");
+        if (rows.length > 0) {
+          const lastRow = rows[rows.length - 1] as HTMLElement;
+          const isMobile = window.innerWidth < 768;
+          
+          const firstTop = isMobile ? 56 : 180;
+          setLineTop(firstTop);
 
-  const heightTransform = useTransform(scrollYProgress, [0, 1], [0, height]);
-  const opacityTransform = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
+          // Line ends exactly at the last bullet point
+          const totalLineHeight = lastRow.offsetTop;
+          setLineHeight(totalLineHeight);
+
+          // Calculate current scroll progress based on viewport center threshold
+          const anchors = ref.current.querySelectorAll(".timeline-anchor");
+          if (anchors.length > 0) {
+            const firstAnchorRect = anchors[0].getBoundingClientRect();
+            
+            const viewportHeight = window.innerHeight;
+            const threshold = viewportHeight * 0.5; // Center of viewport
+            
+            const totalDistance = totalLineHeight;
+            const currentProgress = threshold - firstAnchorRect.top;
+
+            if (totalDistance > 0) {
+              const ratio = currentProgress / totalDistance;
+              const clampedRatio = Math.max(0, Math.min(1, ratio));
+              setActiveHeight(clampedRatio * totalLineHeight);
+            } else {
+              setActiveHeight(0);
+            }
+
+            // Determine which items are "reached" by the progress line
+            const newActiveIndices = new Set<number>();
+            anchors.forEach((anchor, i) => {
+              const anchorRect = anchor.getBoundingClientRect();
+              // Item glows when its anchor reaches the viewport center
+              if (anchorRect.top <= threshold) {
+                newActiveIndices.add(i);
+              }
+            });
+            setActiveIndices(newActiveIndices);
+          }
+        }
+      }
+    };
+
+    calculateBoundsAndProgress();
+    window.addEventListener("scroll", calculateBoundsAndProgress, { passive: true });
+    window.addEventListener("resize", calculateBoundsAndProgress);
+
+    // Callbacks to ensure accurate calculation after client-side hydration
+    const timer1 = setTimeout(calculateBoundsAndProgress, 100);
+    const timer2 = setTimeout(calculateBoundsAndProgress, 500);
+    const timer3 = setTimeout(calculateBoundsAndProgress, 1500);
+
+    return () => {
+      window.removeEventListener("scroll", calculateBoundsAndProgress);
+      window.removeEventListener("resize", calculateBoundsAndProgress);
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
+  }, [ref, data]);
 
   return (
     <div
@@ -57,54 +112,109 @@ export const Timeline = ({
       </div>
 
       <div ref={ref} className="relative max-w-7xl mx-auto pb-20">
-        {data.map((item, index) => (
-          <div
-            key={index}
-            className="flex justify-start pt-10 md:pt-40 md:gap-10"
-          >
-            <div className="sticky flex flex-col md:flex-row z-40 items-center top-40 self-start max-w-xs lg:max-w-sm md:w-full">
-              <div className="h-10 absolute left-3 md:left-3 w-10 rounded-full bg-white dark:bg-black flex items-center justify-center border border-neutral-200 dark:border-neutral-800 shadow-sm">
-                <div className="h-4 w-4 rounded-full bg-neutral-200 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700" />
-              </div>
-              <div className="hidden md:block md:pl-20">
-                <h3 className="text-xl md:text-5xl font-bold text-neutral-500 dark:text-neutral-500">
-                  {item.title}
-                </h3>
-                {item.subtitle && (
-                  <p className="text-sm md:text-base font-medium text-neutral-400 dark:text-neutral-600 mt-1">
-                    {item.subtitle}
-                  </p>
-                )}
-              </div>
-            </div>
+        {data.map((item, index) => {
+          const isActive = activeIndices.has(index);
 
-            <div className="relative pl-20 pr-4 md:pl-4 w-full">
-              <div className="md:hidden block mb-4">
-                <h3 className="text-2xl text-left font-bold text-neutral-500 dark:text-neutral-500">
-                  {item.title}
-                </h3>
-                {item.subtitle && (
-                  <p className="text-xs font-medium text-neutral-400 dark:text-neutral-600 mt-0.5">
-                    {item.subtitle}
-                  </p>
-                )}
+          return (
+            <div
+              key={index}
+              className="timeline-row flex justify-start pt-10 md:pt-40 md:gap-10 relative"
+            >
+              {/* Non-sticky anchor for accurate line measurement regardless of scrolling */}
+              <div className="timeline-anchor absolute left-2 md:left-3 top-10 md:top-40 h-8 w-8 md:h-10 md:w-10 pointer-events-none opacity-0" />
+
+              <div className="flex flex-col md:flex-row z-40 items-center self-start max-w-xs lg:max-w-sm md:w-full">
+                {/* Bullet — lights up when active */}
+                <div
+                  className={`timeline-bullet h-8 w-8 md:h-10 md:w-10 absolute left-2 md:left-3 rounded-full flex items-center justify-center border transition-all duration-700 ease-out ${
+                    isActive
+                      ? "bg-black dark:bg-black border-neutral-500 dark:border-neutral-500 shadow-[0_0_10px_rgba(255,255,255,0.15)]"
+                      : "bg-black dark:bg-black border-neutral-800 dark:border-neutral-800"
+                  }`}
+                >
+                  <div
+                    className={`h-3 w-3 md:h-4 md:w-4 rounded-full transition-all duration-700 ease-out ${
+                      isActive
+                        ? "bg-white dark:bg-white"
+                        : "bg-neutral-700 dark:bg-neutral-700"
+                    }`}
+                  />
+                </div>
+
+                {/* Year + subtitle (desktop) */}
+                <div className="hidden md:block md:pl-20">
+                  <h3
+                    className={`text-xl md:text-5xl font-bold transition-all duration-700 ease-out ${
+                      isActive
+                        ? "text-neutral-900 dark:text-neutral-100"
+                        : "text-neutral-300 dark:text-neutral-700"
+                    }`}
+                  >
+                    {item.title}
+                  </h3>
+                  {item.subtitle && (
+                    <p
+                      className={`text-sm md:text-base font-medium mt-1 transition-all duration-700 ease-out ${
+                        isActive
+                          ? "text-neutral-500 dark:text-neutral-400"
+                          : "text-neutral-300 dark:text-neutral-800"
+                      }`}
+                    >
+                      {item.subtitle}
+                    </p>
+                  )}
+                </div>
               </div>
-              {item.content}
+
+              {/* Content (right side) */}
+              <div
+                className={`relative pl-12 sm:pl-16 md:pl-4 w-full transition-all duration-700 ease-out ${
+                  isActive
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-[0.15] translate-y-4"
+                }`}
+              >
+                {/* Year + subtitle (mobile) */}
+                <div className="md:hidden block mb-4">
+                  <h3
+                    className={`text-2xl text-left font-bold transition-all duration-700 ease-out ${
+                      isActive
+                        ? "text-neutral-900 dark:text-neutral-100"
+                        : "text-neutral-300 dark:text-neutral-700"
+                    }`}
+                  >
+                    {item.title}
+                  </h3>
+                  {item.subtitle && (
+                    <p
+                      className={`text-xs font-medium mt-0.5 transition-all duration-700 ease-out ${
+                        isActive
+                          ? "text-neutral-400 dark:text-neutral-600"
+                          : "text-neutral-300 dark:text-neutral-800"
+                      }`}
+                    >
+                      {item.subtitle}
+                    </p>
+                  )}
+                </div>
+                {item.content}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         <div
           style={{
-            height: height + "px",
+            top: lineTop + "px",
+            height: lineHeight + "px",
           }}
-          className="absolute md:left-8 left-8 top-0 overflow-hidden w-[2px] bg-[linear-gradient(to_bottom,var(--tw-gradient-stops))] from-transparent from-[0%] via-neutral-200 dark:via-neutral-800 to-transparent to-[99%] [mask-image:linear-gradient(to_bottom,transparent_0%,black_10%,black_90%,transparent_100%)]"
+          className="absolute md:left-[31px] left-[23px] overflow-hidden w-[2px] bg-neutral-200 dark:bg-neutral-800 rounded-full"
         >
-          <motion.div
+          <div
             style={{
-              height: heightTransform,
-              opacity: opacityTransform,
+              height: activeHeight + "px",
+              opacity: activeHeight > 2 ? 1 : 0,
             }}
-            className="absolute inset-x-0 top-0 w-[2px] bg-gradient-to-t from-black via-neutral-400 to-transparent dark:from-white dark:via-neutral-600 from-[0%] via-[10%] rounded-full"
+            className="absolute inset-x-0 top-0 w-[2px] bg-neutral-800 dark:bg-neutral-200 rounded-full transition-[height] duration-200 ease-out"
           />
         </div>
       </div>

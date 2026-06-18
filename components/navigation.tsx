@@ -12,6 +12,7 @@ import { ResumeModal } from '@/components/modals/resume-modal';
 const navItems = [
   { name: 'Home', href: '#home' },
   { name: 'About', href: '#about' },
+  { name: 'Experience', href: '#experience' },
   { name: 'Projects', href: '#projects' },
   { name: 'Contact', href: '#contact' },
 ];
@@ -82,12 +83,12 @@ export function Navigation() {
                 </motion.div>
               ))}
               
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-3">
                 <Button
                   variant="outline"
-                  size="sm"
+                  size="default"
                   onClick={() => setShowResumeModal(true)}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 text-sm"
                 >
                   <Eye className="w-4 h-4" />
                   View Resume
