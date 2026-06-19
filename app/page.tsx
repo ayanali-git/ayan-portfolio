@@ -4,13 +4,13 @@ const About = dynamic(() => import('@/components/sections/about'), { ssr: false 
 const Experience = dynamic(() => import('@/components/sections/experience'), { ssr: false });
 const Projects = dynamic(() => import('@/components/sections/projects'), { ssr: false });
 const Contact = dynamic(() => import('@/components/sections/contact'), { ssr: false });
-import { Navigation } from '@/components/navigation';
+import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      <Navigation />
+      <Header />
       <main className="w-full overflow-x-hidden">
         <Hero />
         <About />

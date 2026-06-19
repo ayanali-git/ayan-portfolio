@@ -295,7 +295,7 @@ export function Hero() {
                 className="inline-block bg-gradient-to-r from-blue-400 via-blue-600 to-blue-800 bg-clip-text text-transparent drop-shadow-lg"
                 style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
               >
-                Ayan
+                Ayan Ali
               </motion.span>
             </span>
           </motion.h1>
