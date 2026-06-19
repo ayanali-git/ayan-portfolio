@@ -52,27 +52,26 @@ const AuroraBackground: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
   const reduced = usePrefersReducedMotion();
   const isMobile = useIsMobile();
-   const [inView, setInView] = useState(false);
   
-  useEffect(() => {
-    if (!mountRef.current) return;
-    // Observe visibility: only run WebGL when actually on screen
-    const observer = new IntersectionObserver((entries) => {
-      setInView(entries[0]?.isIntersecting ?? false);
-    }, { root: null, threshold: 0.1 });
-    observer.observe(mountRef.current);
-    return () => observer.disconnect();
-  }, []);
+  // Track visibility with a ref to avoid tearing down the WebGL context
+  const inViewRef = useRef(false);
 
   useEffect(() => {
     if (!mountRef.current) return;
-    if (reduced || isMobile || !inView) return;
+    if (reduced || isMobile) return;
+
     const currentMount = mountRef.current;
     
+    // Intersection Observer to toggle activity
+    const observer = new IntersectionObserver((entries) => {
+      inViewRef.current = entries[0]?.isIntersecting ?? false;
+    }, { root: null, threshold: 0.05 });
+    observer.observe(currentMount);
+
     // Get parent size
     const getSize = () => {
       const rect = currentMount.getBoundingClientRect();
-      return { width: rect.width, height: rect.height };
+      return { width: rect.width || 800, height: rect.height || 600 };
     };
     
     let { width, height } = getSize();
@@ -147,10 +146,25 @@ const AuroraBackground: React.FC = () => {
     scene.add(mesh);
     
     let animationFrameId: number;
+    let lastTime = performance.now();
+    
     const animate = () => { 
       animationFrameId = requestAnimationFrame(animate); 
-      material.uniforms.iTime.value += 0.016; 
-      renderer.render(scene, camera); 
+      
+      // Only render and update uniforms if the canvas is actually visible and tab is active
+      if (inViewRef.current && document.visibilityState === 'visible') {
+        const now = performance.now();
+        const delta = (now - lastTime) / 1000;
+        // Clamp delta to avoid massive leaps when returning to page
+        const clampedDelta = Math.min(0.1, delta);
+        lastTime = now;
+        
+        material.uniforms.iTime.value += clampedDelta; 
+        renderer.render(scene, camera); 
+      } else {
+        // Just keep the lastTime updated so when we scroll back it doesn't jump
+        lastTime = performance.now();
+      }
     };
     
     const handleResize = () => {
@@ -165,6 +179,7 @@ const AuroraBackground: React.FC = () => {
     return () => { 
       cancelAnimationFrame(animationFrameId); 
       window.removeEventListener('resize', handleResize); 
+      observer.disconnect();
       if (currentMount.contains(renderer.domElement)) {
         currentMount.removeChild(renderer.domElement); 
       }
@@ -172,7 +187,7 @@ const AuroraBackground: React.FC = () => {
       material.dispose(); 
       geometry.dispose(); 
     };
-  }, [reduced, isMobile, inView]);
+  }, [reduced, isMobile]);
   
   return <div ref={mountRef} className="absolute inset-0 w-full h-full pointer-events-none z-0" />;
 };

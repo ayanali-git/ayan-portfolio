@@ -29,6 +29,9 @@ export const Timeline = ({
   const [activeIndices, setActiveIndices] = useState<Set<number>>(new Set());
 
   useEffect(() => {
+    let ticking = false;
+    let frameId: number | null = null;
+
     const calculateBoundsAndProgress = () => {
       if (ref.current) {
         const rect = ref.current.getBoundingClientRect();
@@ -80,9 +83,19 @@ export const Timeline = ({
       }
     };
 
+    const requestTick = () => {
+      if (!ticking) {
+        frameId = window.requestAnimationFrame(() => {
+          calculateBoundsAndProgress();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
     calculateBoundsAndProgress();
-    window.addEventListener("scroll", calculateBoundsAndProgress, { passive: true });
-    window.addEventListener("resize", calculateBoundsAndProgress);
+    window.addEventListener("scroll", requestTick, { passive: true });
+    window.addEventListener("resize", requestTick);
 
     // Callbacks to ensure accurate calculation after client-side hydration
     const timer1 = setTimeout(calculateBoundsAndProgress, 100);
@@ -90,8 +103,9 @@ export const Timeline = ({
     const timer3 = setTimeout(calculateBoundsAndProgress, 1500);
 
     return () => {
-      window.removeEventListener("scroll", calculateBoundsAndProgress);
-      window.removeEventListener("resize", calculateBoundsAndProgress);
+      if (frameId) window.cancelAnimationFrame(frameId);
+      window.removeEventListener("scroll", requestTick);
+      window.removeEventListener("resize", requestTick);
       clearTimeout(timer1);
       clearTimeout(timer2);
       clearTimeout(timer3);

@@ -64,7 +64,7 @@ export function Header() {
   const [showResumeModal, setShowResumeModal] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [showNav, setShowNav] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const lastScrollYRef = useRef(0);
   const [activeSection, setActiveSection] = useState('home');
 
   // Refs for measuring nav link positions for the glass pill
@@ -135,17 +135,18 @@ export function Header() {
   useEffect(() => {
     setMounted(true);
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-      if (window.scrollY > lastScrollY && window.scrollY > 50) {
+      const currentScrollY = window.scrollY;
+      setScrolled(currentScrollY > 50);
+      if (currentScrollY > lastScrollYRef.current && currentScrollY > 50) {
         setShowNav(false);
       } else {
         setShowNav(true);
       }
-      setLastScrollY(window.scrollY);
+      lastScrollYRef.current = currentScrollY;
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
   // Lock body scroll when menu is open
   useEffect(() => {
